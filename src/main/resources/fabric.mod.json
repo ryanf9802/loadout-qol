@@ -1,0 +1,26 @@
+{
+	"schemaVersion": 1,
+	"id": "hotbar_qol",
+	"version": "${version}",
+	"name": "Hotbar QoL",
+	"description": "Save and apply one hotbar plus offhand layout using normal inventory moves.",
+	"authors": [
+		"Ryan F"
+	],
+	"contact": {
+		"sources": "https://github.com/ryanf/hotbar-qol"
+	},
+	"license": "MIT",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"com.github.ryanf.hotbarqol.client.HotbarQolClient"
+		]
+	},
+	"depends": {
+		"fabricloader": ">=0.19.2",
+		"minecraft": "~26.1.1",
+		"java": ">=25",
+		"fabric-api": "*"
+	}
+}
