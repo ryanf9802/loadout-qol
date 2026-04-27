@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Saves and applies backpack slot order in addition to hotbar, armor, and offhand.
-- Ignores durability, enchantments, stored enchantments, and repair cost when matching saved items during apply.
+- Ignores durability and repair cost when matching saved items during apply.
+- Ignores shulker, bundle, container loot, and contained entity data when matching saved items while keeping item color/type exact.
 
 ## 0.2.0
 

@@ -8,7 +8,7 @@ Client-side Fabric mod for Minecraft 26.1.1 that saves one hotbar, backpack, arm
 - Run `/loadoutmanager save`.
 - Press the `H` keybind, configurable under the Loadout Manager controls category or through Mod Menu if installed, to apply the saved loadout.
 
-The apply action moves whole stacks only, matches item type plus non-flexible components, and ignores stack counts, durability, enchantments, stored enchantments, and repair cost. Missing saved hotbar, armor, and offhand items leave their target slot empty when inventory space allows it. Empty saved backpack slots stay flexible so other inventory items can fill the remaining spots.
+The apply action moves whole stacks only, matches item type plus non-flexible components, and ignores stack counts, durability, repair cost, and stored item/entity contents. Missing saved hotbar, armor, and offhand items leave their target slot empty when inventory space allows it. Empty saved backpack slots stay flexible so other inventory items can fill the remaining spots.
 
 ## Build
 

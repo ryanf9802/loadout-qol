@@ -22,9 +22,14 @@ import java.util.Set;
 public final class LoadoutLayoutApplier {
 	private static final Set<DataComponentType<?>> FLEXIBLE_MATCH_COMPONENTS = Set.of(
 			DataComponents.DAMAGE,
-			DataComponents.ENCHANTMENTS,
-			DataComponents.STORED_ENCHANTMENTS,
-			DataComponents.REPAIR_COST
+			DataComponents.REPAIR_COST,
+			DataComponents.CONTAINER,
+			DataComponents.BUNDLE_CONTENTS,
+			DataComponents.CONTAINER_LOOT,
+			DataComponents.BEES,
+			DataComponents.BUCKET_ENTITY_DATA,
+			DataComponents.ENTITY_DATA,
+			DataComponents.BLOCK_ENTITY_DATA
 	);
 
 	private final LoadoutLayoutStore store;
