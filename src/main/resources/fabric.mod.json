@@ -3,7 +3,7 @@
 	"id": "loadout_manager",
 	"version": "${version}",
 	"name": "Loadout Manager",
-	"description": "Save and apply one hotbar, armor, and offhand loadout using normal inventory moves.",
+	"description": "Save and apply one hotbar, backpack, armor, and offhand loadout using normal inventory moves.",
 	"authors": [
 		"Ryan F"
 	],

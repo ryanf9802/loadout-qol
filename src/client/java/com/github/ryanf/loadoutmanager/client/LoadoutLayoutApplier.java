@@ -90,7 +90,7 @@ public final class LoadoutLayoutApplier {
 
 	private void plan(LocalPlayer player, LoadoutLayout layout) {
 		pendingClicks.clear();
-		List<InventoryPlanner.Target<ItemStack>> targets = new ArrayList<>(LoadoutLayout.HOTBAR_SIZE + 5);
+		List<InventoryPlanner.Target<ItemStack>> targets = new ArrayList<>(LoadoutLayout.HOTBAR_SIZE + LoadoutLayout.BACKPACK_SIZE + 5);
 		for (int hotbarSlot = 0; hotbarSlot < LoadoutLayout.HOTBAR_SIZE; hotbarSlot++) {
 			targets.add(new InventoryPlanner.Target<>(InventoryPlanner.FIRST_HOTBAR_MENU_SLOT + hotbarSlot, layout.hotbar()[hotbarSlot]));
 		}
@@ -99,6 +99,12 @@ public final class LoadoutLayoutApplier {
 		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_LEGS_MENU_SLOT, layout.armor().legs()));
 		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_FEET_MENU_SLOT, layout.armor().feet()));
 		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.OFFHAND_MENU_SLOT, layout.offhand()));
+		for (int backpackSlot = 0; backpackSlot < LoadoutLayout.BACKPACK_SIZE; backpackSlot++) {
+			ItemStack desired = layout.backpack()[backpackSlot];
+			if (!desired.isEmpty()) {
+				targets.add(new InventoryPlanner.Target<>(InventoryPlanner.FIRST_MAIN_MENU_SLOT + backpackSlot, desired));
+			}
+		}
 
 		InventoryPlanner<ItemStack> planner = new InventoryPlanner<>(new InventoryPlanner.StackRules<>() {
 			@Override

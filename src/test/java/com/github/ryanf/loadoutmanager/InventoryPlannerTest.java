@@ -116,6 +116,26 @@ final class InventoryPlannerTest {
 		assertEquals(0, result.skippedSlots());
 	}
 
+	@Test
+	void backpackCanBeTargeted() {
+		TestInventory inventory = inventory(slot(9, "cobblestone"), slot(10, "apple"));
+
+		apply(inventory, target(9, "apple"));
+
+		assertEquals("apple", inventory.stackAt(9));
+		assertEquals("cobblestone", inventory.stackAt(10));
+	}
+
+	@Test
+	void unmentionedBackpackSlotIsLeftFlexible() {
+		TestInventory inventory = inventory(slot(9, "cobblestone"), slot(36, "sword"));
+
+		apply(inventory, target(36, "sword"));
+
+		assertEquals("cobblestone", inventory.stackAt(9));
+		assertEquals("sword", inventory.stackAt(36));
+	}
+
 	@SafeVarargs
 	private final InventoryPlanner.Result apply(TestInventory inventory, InventoryPlanner.Target<String>... targets) {
 		InventoryPlanner.Result result = planner.plan(inventory.toSlots(), List.of(targets));

@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Saves and applies backpack slot order in addition to hotbar, armor, and offhand.
+
 ## 0.2.0
 
 - Renamed the mod to Loadout Manager.
