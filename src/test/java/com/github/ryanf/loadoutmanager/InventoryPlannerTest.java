@@ -1,4 +1,4 @@
-package com.github.ryanf.hotbarqol;
+package com.github.ryanf.loadoutmanager;
 
 import org.junit.jupiter.api.Test;
 
@@ -73,6 +73,36 @@ final class InventoryPlannerTest {
 
 		assertEquals("shield", inventory.stackAt(45));
 		assertEquals(null, inventory.stackAt(9));
+	}
+
+	@Test
+	void armorCanBeTargeted() {
+		TestInventory inventory = inventory(slot(9, "helmet"), slot(5, null));
+
+		apply(inventory, target(5, "helmet"));
+
+		assertEquals("helmet", inventory.stackAt(5));
+		assertEquals(null, inventory.stackAt(9));
+	}
+
+	@Test
+	void armorCanBeUsedAsSource() {
+		TestInventory inventory = inventory(slot(5, "helmet"), slot(9, null), slot(36, null));
+
+		apply(inventory, target(36, "helmet"));
+
+		assertEquals(null, inventory.stackAt(5));
+		assertEquals("helmet", inventory.stackAt(36));
+	}
+
+	@Test
+	void emptySavedArmorSlotClearsArmorWhenMainSpaceExists() {
+		TestInventory inventory = inventory(slot(5, "helmet"), slot(9, null));
+
+		apply(inventory, target(5, null));
+
+		assertEquals(null, inventory.stackAt(5));
+		assertEquals("helmet", inventory.stackAt(9));
 	}
 
 	@Test

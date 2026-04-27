@@ -1,4 +1,4 @@
-package com.github.ryanf.hotbarqol;
+package com.github.ryanf.loadoutmanager;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +6,10 @@ import java.util.List;
 import java.util.Set;
 
 public final class InventoryPlanner<T> {
+	public static final int ARMOR_HEAD_MENU_SLOT = 5;
+	public static final int ARMOR_CHEST_MENU_SLOT = 6;
+	public static final int ARMOR_LEGS_MENU_SLOT = 7;
+	public static final int ARMOR_FEET_MENU_SLOT = 8;
 	public static final int FIRST_MAIN_MENU_SLOT = 9;
 	public static final int LAST_MAIN_MENU_SLOT = 35;
 	public static final int FIRST_HOTBAR_MENU_SLOT = 36;

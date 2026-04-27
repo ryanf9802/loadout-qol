@@ -1,0 +1,12 @@
+{
+	"loadout_manager.command.save.success": "Saved loadout.",
+	"loadout_manager.command.save.error": "Could not save loadout: %s",
+	"loadout_manager.apply.no_player": "Join a world before applying a loadout.",
+	"loadout_manager.apply.no_layout": "No saved loadout. Run /loadoutmanager save first.",
+	"loadout_manager.apply.invalid_layout": "Could not load saved loadout: %s",
+	"loadout_manager.apply.busy": "A loadout is already being applied.",
+	"loadout_manager.apply.carried": "Put down the carried stack before applying a loadout.",
+	"loadout_manager.apply.screen": "Close the current screen before applying a loadout.",
+	"key.category.loadout_manager.loadout_manager": "Loadout Manager",
+	"key.loadout_manager.apply": "Apply Saved Loadout"
+}

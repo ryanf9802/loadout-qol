@@ -1,20 +1,20 @@
 {
 	"schemaVersion": 1,
-	"id": "hotbar_qol",
+	"id": "loadout_manager",
 	"version": "${version}",
-	"name": "Hotbar QoL",
-	"description": "Save and apply one hotbar plus offhand layout using normal inventory moves.",
+	"name": "Loadout Manager",
+	"description": "Save and apply one hotbar, armor, and offhand loadout using normal inventory moves.",
 	"authors": [
 		"Ryan F"
 	],
 	"contact": {
-		"sources": "https://github.com/ryanf/hotbar-qol"
+		"sources": "https://github.com/ryanf9802/hotbar-qol"
 	},
 	"license": "MIT",
 	"environment": "client",
 	"entrypoints": {
 		"client": [
-			"com.github.ryanf.hotbarqol.client.HotbarQolClient"
+			"com.github.ryanf.loadoutmanager.client.LoadoutManagerClient"
 		]
 	},
 	"depends": {

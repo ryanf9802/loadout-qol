@@ -1,6 +1,6 @@
-package com.github.ryanf.hotbarqol.client;
+package com.github.ryanf.loadoutmanager.client;
 
-import com.github.ryanf.hotbarqol.InventoryPlanner;
+import com.github.ryanf.loadoutmanager.InventoryPlanner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
@@ -14,48 +14,43 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 
-public final class HotbarLayoutApplier {
-	private final HotbarLayoutStore store;
+public final class LoadoutLayoutApplier {
+	private final LoadoutLayoutStore store;
 	private final Queue<ClickStep> pendingClicks = new ArrayDeque<>();
 	private boolean applying;
-	private int skippedSlots;
 
-	public HotbarLayoutApplier(HotbarLayoutStore store) {
+	public LoadoutLayoutApplier(LoadoutLayoutStore store) {
 		this.store = store;
 	}
 
 	public void start(Minecraft client) {
 		if (applying) {
-			message(client, "hotbar_qol.apply.busy");
+			message(client, "loadout_manager.apply.busy");
 			return;
 		}
 		if (client.player == null || client.gameMode == null) {
-			message(client, "hotbar_qol.apply.no_player");
+			message(client, "loadout_manager.apply.no_player");
 			return;
 		}
 		if (!store.exists()) {
-			message(client, "hotbar_qol.apply.no_layout");
+			message(client, "loadout_manager.apply.no_layout");
 			return;
 		}
 		if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
-			message(client, "hotbar_qol.apply.screen");
+			message(client, "loadout_manager.apply.screen");
 			return;
 		}
 		if (!client.player.containerMenu.getCarried().isEmpty()) {
-			message(client, "hotbar_qol.apply.carried");
+			message(client, "loadout_manager.apply.carried");
 			return;
 		}
 
 		try {
-			HotbarLayout layout = store.load(client);
+			LoadoutLayout layout = store.load(client);
 			plan(client.player, layout);
-			if (pendingClicks.isEmpty()) {
-				message(client, "hotbar_qol.apply.success");
-				return;
-			}
-			applying = true;
-		} catch (HotbarLayoutException exception) {
-			message(client, "hotbar_qol.apply.invalid_layout", exception.getMessage());
+			applying = !pendingClicks.isEmpty();
+		} catch (LoadoutLayoutException exception) {
+			message(client, "loadout_manager.apply.invalid_layout", exception.getMessage());
 		}
 	}
 
@@ -71,7 +66,7 @@ public final class HotbarLayoutApplier {
 		if (client.screen != null && !(client.screen instanceof InventoryScreen)) {
 			pendingClicks.clear();
 			applying = false;
-			message(client, "hotbar_qol.apply.screen");
+			message(client, "loadout_manager.apply.screen");
 			return;
 		}
 
@@ -84,26 +79,25 @@ public final class HotbarLayoutApplier {
 		if (!client.player.containerMenu.getCarried().isEmpty()) {
 			pendingClicks.clear();
 			applying = false;
-			message(client, "hotbar_qol.apply.carried");
+			message(client, "loadout_manager.apply.carried");
 			return;
 		}
 
 		if (pendingClicks.isEmpty()) {
 			applying = false;
-			if (skippedSlots == 0) {
-				message(client, "hotbar_qol.apply.success");
-			} else {
-				message(client, "hotbar_qol.apply.partial", skippedSlots);
-			}
 		}
 	}
 
-	private void plan(LocalPlayer player, HotbarLayout layout) {
+	private void plan(LocalPlayer player, LoadoutLayout layout) {
 		pendingClicks.clear();
-		List<InventoryPlanner.Target<ItemStack>> targets = new ArrayList<>(HotbarLayout.HOTBAR_SIZE + 1);
-		for (int hotbarSlot = 0; hotbarSlot < HotbarLayout.HOTBAR_SIZE; hotbarSlot++) {
+		List<InventoryPlanner.Target<ItemStack>> targets = new ArrayList<>(LoadoutLayout.HOTBAR_SIZE + 5);
+		for (int hotbarSlot = 0; hotbarSlot < LoadoutLayout.HOTBAR_SIZE; hotbarSlot++) {
 			targets.add(new InventoryPlanner.Target<>(InventoryPlanner.FIRST_HOTBAR_MENU_SLOT + hotbarSlot, layout.hotbar()[hotbarSlot]));
 		}
+		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_HEAD_MENU_SLOT, layout.armor().head()));
+		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_CHEST_MENU_SLOT, layout.armor().chest()));
+		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_LEGS_MENU_SLOT, layout.armor().legs()));
+		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.ARMOR_FEET_MENU_SLOT, layout.armor().feet()));
 		targets.add(new InventoryPlanner.Target<>(InventoryPlanner.OFFHAND_MENU_SLOT, layout.offhand()));
 
 		InventoryPlanner<ItemStack> planner = new InventoryPlanner<>(new InventoryPlanner.StackRules<>() {
@@ -119,8 +113,6 @@ public final class HotbarLayoutApplier {
 		});
 
 		InventoryPlanner.Result result = planner.plan(snapshot(player), targets);
-		skippedSlots = result.skippedSlots();
-
 		for (InventoryPlanner.Move move : result.moves()) {
 			pendingClicks.add(new ClickStep(move.sourceMenuSlot()));
 			pendingClicks.add(new ClickStep(move.targetMenuSlot()));
@@ -131,12 +123,20 @@ public final class HotbarLayoutApplier {
 	private static List<InventoryPlanner.Slot<ItemStack>> snapshot(LocalPlayer player) {
 		List<InventoryPlanner.Slot<ItemStack>> states = new ArrayList<>();
 		AbstractContainerMenu menu = player.containerMenu;
+		addSnapshotSlot(states, menu, InventoryPlanner.ARMOR_HEAD_MENU_SLOT);
+		addSnapshotSlot(states, menu, InventoryPlanner.ARMOR_CHEST_MENU_SLOT);
+		addSnapshotSlot(states, menu, InventoryPlanner.ARMOR_LEGS_MENU_SLOT);
+		addSnapshotSlot(states, menu, InventoryPlanner.ARMOR_FEET_MENU_SLOT);
 		for (int slot = InventoryPlanner.FIRST_MAIN_MENU_SLOT; slot <= InventoryPlanner.OFFHAND_MENU_SLOT; slot++) {
-			if (slot >= 0 && slot < menu.slots.size()) {
-				states.add(new InventoryPlanner.Slot<>(slot, menu.slots.get(slot).getItem().copy()));
-			}
+			addSnapshotSlot(states, menu, slot);
 		}
 		return states;
+	}
+
+	private static void addSnapshotSlot(List<InventoryPlanner.Slot<ItemStack>> states, AbstractContainerMenu menu, int menuSlot) {
+		if (menuSlot >= 0 && menuSlot < menu.slots.size()) {
+			states.add(new InventoryPlanner.Slot<>(menuSlot, menu.slots.get(menuSlot).getItem().copy()));
+		}
 	}
 
 	private static boolean sameSavedStack(ItemStack actual, ItemStack desired) {

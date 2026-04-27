@@ -18,7 +18,7 @@ loom {
 	splitEnvironmentSourceSets()
 
 	mods {
-		"hotbar_qol" {
+		"loadout_manager" {
 			sourceSet sourceSets.main
 			sourceSet sourceSets.client
 		}
@@ -56,7 +56,7 @@ test {
 	useJUnitPlatform()
 }
 
-def releaseJarName = "Hotbar-QoL-mc${project.minecraft_version}-v${project.mod_version}.jar"
+def releaseJarName = "Loadout-Manager-mc${project.minecraft_version}-v${project.mod_version}.jar"
 
 jar {
 	inputs.property "projectName", project.name
@@ -71,7 +71,7 @@ modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = project.modrinth_project_id
 	versionNumber = "${project.mod_version}+mc${project.minecraft_version}"
-	versionName = "Hotbar QoL ${project.mod_version} for Minecraft ${project.minecraft_version}"
+	versionName = "Loadout Manager ${project.mod_version} for Minecraft ${project.minecraft_version}"
 	versionType = project.release_type
 	uploadFile = layout.buildDirectory.file("libs/${releaseJarName}")
 	gameVersions = [project.minecraft_version]
