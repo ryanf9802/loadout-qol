@@ -6,7 +6,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.ArrayDeque;
@@ -78,7 +78,7 @@ public final class HotbarLayoutApplier {
 		AbstractContainerMenu menu = client.player.containerMenu;
 		for (int clickCount = 0; clickCount < 3 && !pendingClicks.isEmpty(); clickCount++) {
 			ClickStep click = pendingClicks.poll();
-			client.gameMode.handleInventoryMouseClick(menu.containerId, click.menuSlot(), 0, ClickType.PICKUP, client.player);
+			client.gameMode.handleContainerInput(menu.containerId, click.menuSlot(), 0, ContainerInput.PICKUP, client.player);
 		}
 
 		if (!client.player.containerMenu.getCarried().isEmpty()) {
@@ -145,7 +145,7 @@ public final class HotbarLayoutApplier {
 
 	private static void message(Minecraft client, String translationKey, Object... args) {
 		if (client.player != null) {
-			client.player.displayClientMessage(Component.translatable(translationKey, args), true);
+			client.player.sendOverlayMessage(Component.translatable(translationKey, args));
 		}
 	}
 

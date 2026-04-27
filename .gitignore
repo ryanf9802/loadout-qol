@@ -1,7 +1,30 @@
+# Local agent/editor state
+.codex
+.codex/
+
+# Gradle/Fabric generated files
 .gradle/
 build/
 run/
 out/
+
+# Logs and crash reports
 *.log
-*.iml
+logs/
+crash-reports/
+hs_err_pid*
+replay_pid*
+
+# IDE/editor files
 .idea/
+*.iml
+*.ipr
+*.iws
+.classpath
+.project
+.settings/
+.vscode/
+
+# OS metadata
+.DS_Store
+Thumbs.db

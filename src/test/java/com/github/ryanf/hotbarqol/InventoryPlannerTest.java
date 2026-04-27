@@ -86,7 +86,8 @@ final class InventoryPlannerTest {
 		assertEquals(0, result.skippedSlots());
 	}
 
-	private InventoryPlanner.Result apply(TestInventory inventory, InventoryPlanner.Target<String>... targets) {
+	@SafeVarargs
+	private final InventoryPlanner.Result apply(TestInventory inventory, InventoryPlanner.Target<String>... targets) {
 		InventoryPlanner.Result result = planner.plan(inventory.toSlots(), List.of(targets));
 		for (InventoryPlanner.Move move : result.moves()) {
 			inventory.swap(move.sourceMenuSlot(), move.targetMenuSlot());

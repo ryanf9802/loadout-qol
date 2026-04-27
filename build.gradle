@@ -1,5 +1,6 @@
 plugins {
 	id 'net.fabricmc.fabric-loom' version "${loom_version}"
+	id 'com.modrinth.minotaur' version '2.9.0'
 	id 'maven-publish'
 }
 
@@ -30,6 +31,7 @@ dependencies {
 	implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
 
 	testImplementation "org.junit.jupiter:junit-jupiter:${project.junit_version}"
+	testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
 processResources {
@@ -54,12 +56,35 @@ test {
 	useJUnitPlatform()
 }
 
+def releaseJarName = "Hotbar-QoL-mc${project.minecraft_version}-v${project.mod_version}.jar"
+
 jar {
 	inputs.property "projectName", project.name
+	archiveFileName = releaseJarName
 
 	from("LICENSE") {
 		rename { "${it}_${project.name}" }
 	}
+}
+
+modrinth {
+	token = System.getenv("MODRINTH_TOKEN")
+	projectId = project.modrinth_project_id
+	versionNumber = "${project.mod_version}+mc${project.minecraft_version}"
+	versionName = "Hotbar QoL ${project.mod_version} for Minecraft ${project.minecraft_version}"
+	versionType = project.release_type
+	uploadFile = layout.buildDirectory.file("libs/${releaseJarName}")
+	gameVersions = [project.minecraft_version]
+	loaders = ["fabric"]
+	changelog = rootProject.file("CHANGELOG.md").exists() ? rootProject.file("CHANGELOG.md").text : "See GitHub commit history for changes."
+
+	dependencies {
+		required.project("fabric-api")
+	}
+}
+
+tasks.matching { it.name == "modrinth" }.configureEach {
+	dependsOn "build"
 }
 
 publishing {
