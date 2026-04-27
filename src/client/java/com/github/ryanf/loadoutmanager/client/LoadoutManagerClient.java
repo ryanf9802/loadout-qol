@@ -15,9 +15,10 @@ import org.lwjgl.glfw.GLFW;
 public final class LoadoutManagerClient implements ClientModInitializer {
 	public static final String MOD_ID = "loadout_manager";
 
+	private static KeyMapping applyKey;
+
 	private LoadoutLayoutStore store;
 	private LoadoutLayoutApplier applier;
-	private KeyMapping applyKey;
 
 	@Override
 	public void onInitializeClient() {
@@ -56,5 +57,13 @@ public final class LoadoutManagerClient implements ClientModInitializer {
 			source.sendFeedback(Component.translatable("loadout_manager.command.save.error", exception.getMessage()));
 			return 0;
 		}
+	}
+
+	public static KeyMapping applyKey() {
+		if (applyKey == null) {
+			throw new IllegalStateException("Loadout Manager keybindings have not been registered yet.");
+		}
+
+		return applyKey;
 	}
 }

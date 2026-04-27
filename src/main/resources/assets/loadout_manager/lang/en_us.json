@@ -8,5 +8,7 @@
 	"loadout_manager.apply.carried": "Put down the carried stack before applying a loadout.",
 	"loadout_manager.apply.screen": "Close the current screen before applying a loadout.",
 	"key.category.loadout_manager.loadout_manager": "Loadout Manager",
-	"key.loadout_manager.apply": "Apply Saved Loadout"
+	"key.loadout_manager.apply": "Apply Saved Loadout",
+	"loadout_manager.settings.title": "Loadout Manager",
+	"loadout_manager.settings.apply_key.capturing": "> Press a key <"
 }
