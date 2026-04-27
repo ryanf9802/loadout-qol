@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: modrinth-publish
+  cancel-in-progress: false
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -24,10 +28,29 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Compute next patch version
+        id: version
+        env:
+          MODRINTH_PROJECT_ID: NAkSF4Vx
+          MINECRAFT_VERSION: 26.1.1
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          versions="$(curl -fsSL \
+            -H "Authorization: ${MODRINTH_TOKEN}" \
+            -H "User-Agent: ryanf9802/loadout-manager-release-workflow" \
+            "https://api.modrinth.com/v2/project/${MODRINTH_PROJECT_ID}/version?loaders=%5B%22fabric%22%5D&game_versions=%5B%22${MINECRAFT_VERSION}%22%5D&include_changelog=false")"
+          latest="$(echo "$versions" | jq -r '.[].version_number | select(test("^[0-9]+\\.[0-9]+\\.[0-9]+\\+mc"))' | sed 's/+mc.*//' | sort -V | tail -n 1)"
+          if [ -z "$latest" ]; then
+            latest="0.0.0"
+          fi
+          next="$(echo "$latest" | awk -F. '{ printf "%d.%d.%d", $1, $2, $3 + 1 }')"
+          echo "version=$next" >> "$GITHUB_OUTPUT"
+          echo "Publishing Loadout Manager ${next} for Minecraft ${MINECRAFT_VERSION}"
+
       - name: Build
-        run: ./gradlew build
+        run: ./gradlew build -Pmod_version=${{ steps.version.outputs.version }}
 
       - name: Publish to Modrinth
         env:
           MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
-        run: ./gradlew modrinth
+        run: ./gradlew modrinth -Pmod_version=${{ steps.version.outputs.version }}

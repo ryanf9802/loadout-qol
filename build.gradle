@@ -4,7 +4,7 @@ plugins {
 	id 'maven-publish'
 }
 
-version = project.mod_version
+version = providers.gradleProperty("mod_version").getOrElse(project.mod_version)
 group = project.maven_group
 
 base {
@@ -56,7 +56,37 @@ test {
 	useJUnitPlatform()
 }
 
-def releaseJarName = "Loadout-Manager-mc${project.minecraft_version}-v${project.mod_version}.jar"
+def releaseJarName = "Loadout-Manager-mc${project.minecraft_version}-v${project.version}.jar"
+def fallbackChangelog = {
+	def sha = System.getenv("GITHUB_SHA")
+	if (sha != null && sha.length() >= 7) {
+		return "Automated release from commit `${sha.substring(0, 7)}`. See GitHub commit history for changes."
+	}
+	return "See GitHub commit history for changes."
+}
+def changelogForVersion = { String version ->
+	def changelogFile = rootProject.file("CHANGELOG.md")
+	if (!changelogFile.exists()) {
+		return fallbackChangelog()
+	}
+
+	def lines = changelogFile.readLines()
+	def start = lines.findIndexOf { it == "## ${version}" }
+	if (start < 0) {
+		return fallbackChangelog()
+	}
+
+	def section = []
+	for (int index = start + 1; index < lines.size(); index++) {
+		if (lines[index].startsWith("## ")) {
+			break
+		}
+		section.add(lines[index])
+	}
+
+	def text = section.join("\n").trim()
+	return text.isEmpty() ? fallbackChangelog() : text
+}
 
 jar {
 	inputs.property "projectName", project.name
@@ -70,13 +100,13 @@ jar {
 modrinth {
 	token = System.getenv("MODRINTH_TOKEN")
 	projectId = project.modrinth_project_id
-	versionNumber = "${project.mod_version}+mc${project.minecraft_version}"
-	versionName = "Loadout Manager ${project.mod_version} for Minecraft ${project.minecraft_version}"
+	versionNumber = "${project.version}+mc${project.minecraft_version}"
+	versionName = "Loadout Manager ${project.version} for Minecraft ${project.minecraft_version}"
 	versionType = project.release_type
 	uploadFile = layout.buildDirectory.file("libs/${releaseJarName}")
 	gameVersions = [project.minecraft_version]
 	loaders = ["fabric"]
-	changelog = rootProject.file("CHANGELOG.md").exists() ? rootProject.file("CHANGELOG.md").text : "See GitHub commit history for changes."
+	changelog = changelogForVersion(project.version.toString())
 
 	dependencies {
 		required.project("fabric-api")
@@ -85,6 +115,14 @@ modrinth {
 
 tasks.matching { it.name == "modrinth" }.configureEach {
 	dependsOn "build"
+}
+
+tasks.register("printModrinthChangelog") {
+	group = "publishing"
+	description = "Prints the changelog section that will be uploaded for the current mod_version."
+	doLast {
+		println changelogForVersion(project.version.toString())
+	}
 }
 
 publishing {
