@@ -4,6 +4,9 @@ import com.github.ryanf.loadoutmanager.InventoryPlanner;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.core.component.DataComponentMap;
+import net.minecraft.core.component.DataComponentType;
+import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ContainerInput;
@@ -12,9 +15,18 @@ import net.minecraft.world.item.ItemStack;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Queue;
+import java.util.Set;
 
 public final class LoadoutLayoutApplier {
+	private static final Set<DataComponentType<?>> FLEXIBLE_MATCH_COMPONENTS = Set.of(
+			DataComponents.DAMAGE,
+			DataComponents.ENCHANTMENTS,
+			DataComponents.STORED_ENCHANTMENTS,
+			DataComponents.REPAIR_COST
+	);
+
 	private final LoadoutLayoutStore store;
 	private final Queue<ClickStep> pendingClicks = new ArrayDeque<>();
 	private boolean applying;
@@ -145,8 +157,24 @@ public final class LoadoutLayoutApplier {
 		}
 	}
 
-	private static boolean sameSavedStack(ItemStack actual, ItemStack desired) {
-		return !actual.isEmpty() && ItemStack.isSameItemSameComponents(actual, desired);
+	static boolean sameSavedStack(ItemStack actual, ItemStack desired) {
+		return !actual.isEmpty()
+				&& ItemStack.isSameItem(actual, desired)
+				&& sameComparableComponents(actual.getComponents(), desired.getComponents());
+	}
+
+	private static boolean sameComparableComponents(DataComponentMap actual, DataComponentMap desired) {
+		for (DataComponentType<?> component : actual.keySet()) {
+			if (!FLEXIBLE_MATCH_COMPONENTS.contains(component) && !Objects.equals(actual.get(component), desired.get(component))) {
+				return false;
+			}
+		}
+		for (DataComponentType<?> component : desired.keySet()) {
+			if (!FLEXIBLE_MATCH_COMPONENTS.contains(component) && !actual.has(component)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private static void message(Minecraft client, String translationKey, Object... args) {

@@ -3,6 +3,7 @@
 ## Unreleased
 
 - Saves and applies backpack slot order in addition to hotbar, armor, and offhand.
+- Ignores durability, enchantments, stored enchantments, and repair cost when matching saved items during apply.
 
 ## 0.2.0
 

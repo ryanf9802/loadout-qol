@@ -78,6 +78,9 @@ def changelogForVersion = { String version ->
 	def lines = changelogFile.readLines()
 	def start = lines.findIndexOf { it == "## ${version}" }
 	if (start < 0) {
+		start = lines.findIndexOf { it == "## Unreleased" }
+	}
+	if (start < 0) {
 		return fallbackChangelog()
 	}
 
